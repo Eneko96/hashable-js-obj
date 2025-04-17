@@ -1,0 +1,18 @@
+{
+  "name": "@eneko96/obj-equality",
+  "type": "module",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "build": "node esbuild.config.js",
+    "test": "node src/__test__.js"
+  },
+  "keywords": [],
+  "author": "Iñigo Moreno Ramos",
+  "license": "ISC",
+  "description": "An equality object wrapper just for testing purposes",
+  "dependencies": {
+    "esbuild": "^0.25.2"
+  }
+}
