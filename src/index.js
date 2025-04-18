@@ -1,10 +1,24 @@
 import { TypeCheck } from "./typecheck.js";
 
 export class HashableObject {
-  constructor(obj, hash = true) {
+  constructor(obj, hash = true, murmur = true) {
+    if (
+      typeof obj === "number" ||
+      typeof obj === "string" ||
+      obj === null ||
+      obj === undefined
+    )
+      throw new Error("Cannot be a primitive nor null or undefined");
     this.obj = obj;
     this.hash = hash;
-    this._cachedUniqueness = this.hash ? this.#getUniqueness() : null;
+    this.murmur = murmur;
+    this._cachedUniqueness = null;
+    if (this.hash) {
+      this._cachedUniqueness = this.#getUniqueness();
+      if (this.murmur) {
+        this._cachedUniqueness = this.#getHash(this._cachedUniqueness);
+      }
+    }
   }
 
   get value() {
@@ -37,9 +51,29 @@ export class HashableObject {
       return this.obj.getUniqueness();
     }
 
-    if (TypeCheck.isObject(this.obj) || Assert.isArray(this.obj)) {
+    if (TypeCheck.isObject(this.obj) || TypeCheck.isArray(this.obj)) {
       return this.#getEntries(this.obj);
     }
+  }
+
+  #getHash() {
+    const base = this._cachedUniqueness;
+    let h1 = 0;
+
+    for (let i = 0; i < base.length; i++) {
+      let k1 = base.charCodeAt(i);
+      k1 = (k1 & 0xffff) * 0x5bd1e995;
+      h1 ^= k1;
+      h1 = (h1 << 15) | (h1 >>> 17);
+    }
+
+    h1 ^= h1 >>> 16;
+    h1 = h1 * 0x85ebca6b;
+    h1 ^= h1 >>> 13;
+    h1 = h1 * 0xc2b2ae35;
+    h1 ^= h1 >>> 16;
+
+    return h1.toString(16);
   }
 
   equals(other) {
