@@ -1,4 +1,4 @@
-import { HashableObject } from "../src/index.js";
+import { HashableObject } from "../src/index";
 
 const deep_example = {
   user: {
@@ -27,7 +27,7 @@ const unique = Array.from({ length: 100_000 }, (_, i) => ({
 }));
 
 // --- Benchmark Helpers ---
-function bench(name, fn) {
+function bench(name: string, fn: () => void) {
   console.time(name);
   fn();
   console.timeEnd(name);
@@ -35,25 +35,31 @@ function bench(name, fn) {
 
 // --- 1. Creation Benchmarks ---
 bench("Create HashableObject - repeated (no hash)", () => {
-  repeated.map((item) => new HashableObject(item, false));
+  repeated.map(
+    (item) => new HashableObject(item, { hash: false, murmur: false }),
+  );
 });
 
 bench("Create HashableObject - repeated (hash, no murmur)", () => {
-  repeated.map((item) => new HashableObject(item, true, false));
+  repeated.map(
+    (item) => new HashableObject(item, { hash: true, murmur: false }),
+  );
 });
 
 bench("Create HashableObject - repeated (hash + murmur)", () => {
-  repeated.map((item) => new HashableObject(item, true, true));
+  repeated.map((item) => new HashableObject(item));
 });
 
 bench("Create HashableObject - unique (hash + murmur)", () => {
-  unique.map((item) => new HashableObject(item, true, true));
+  unique.map((item) => new HashableObject(item));
 });
 
 // --- 2. Equality Check Benchmarks ---
-const base1 = new HashableObject(deep_example, true, false);
-const base2 = new HashableObject(deep_example, true, false);
-const slightlyDifferent = new HashableObject(similar_example, true, false);
+const base1 = new HashableObject(deep_example, { murmur: false });
+const base2 = new HashableObject(deep_example, { murmur: false });
+const slightlyDifferent = new HashableObject(similar_example, {
+  murmur: false,
+});
 
 bench("Compare equality (same obj, no murmur)", () => {
   console.log("Equal?", base1.equals(base2));
@@ -63,9 +69,9 @@ bench("Compare equality (diff obj, no murmur)", () => {
   console.log("Equal?", base1.equals(slightlyDifferent));
 });
 
-const murmur1 = new HashableObject(deep_example, true, true);
-const murmur2 = new HashableObject(deep_example, true, true);
-const murmurDifferent = new HashableObject(similar_example, true, true);
+const murmur1 = new HashableObject(deep_example);
+const murmur2 = new HashableObject(deep_example);
+const murmurDifferent = new HashableObject(similar_example);
 
 bench("Compare equality (same obj, murmur)", () => {
   console.log("Equal?", murmur1.equals(murmur2));
@@ -77,8 +83,8 @@ bench("Compare equality (diff obj, murmur)", () => {
 console.log("-------------------------");
 
 // --- 4. No hash comparison ---
-const raw1 = new HashableObject(deep_example, false);
-const raw2 = new HashableObject(deep_example, false);
+const raw1 = new HashableObject(deep_example, { murmur: false, hash: false });
+const raw2 = new HashableObject(deep_example, { murmur: false, hash: false });
 
 bench("Compare equality (no hash)", () => {
   console.log("Equal?", raw1.equals(raw2));

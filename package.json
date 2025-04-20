@@ -5,8 +5,10 @@
   "main": "dist/index.js",
   "scripts": {
     "start": "node src/index.js",
-    "build": "node esbuild.config.js",
-    "test": "node src/__test__.js"
+    "build": "node esbuild.config.js & tsc --project tsconfig.json",
+    "test": "node src/__test__.js",
+    "ts": "tsc src/index.ts",
+    "benchmark": "tsx src/index.ts"
   },
   "keywords": [],
   "author": "Iñigo Moreno Ramos",
@@ -14,5 +16,9 @@
   "description": "An equality object wrapper just for testing purposes",
   "dependencies": {
     "esbuild": "^0.25.2"
+  },
+  "devDependencies": {
+    "@types/node": "17.0.29",
+    "tsx": "^4.19.3"
   }
 }
