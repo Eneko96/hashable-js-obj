@@ -3,6 +3,7 @@
   "type": "module",
   "version": "1.0.4",
   "main": "dist/index.js",
+  "types": "dist/types/index.d.ts",
   "scripts": {
     "start": "node src/index.js",
     "build": "node esbuild.config.js & tsc --project tsconfig.json",
